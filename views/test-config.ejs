@@ -1,62 +1,115 @@
 <section class="form-container container position-relative mt-3">
     <h2 class="text-center">Test Configuration</h2>
-    <form class="container m-1 d-fixed" method="POST" action="/test-config-submit">
-        <div id="advanced-options" class="mt-3">
-            <!-- Advanced options -->
+    <form class="container m-1" method="POST" action="/test-config-submit">
+        
+        <!-- Band selection -->
+        <div class="mb-3">
+            <label for="bands_select" class="form-label">Bands</label>
+            <select class="form-select" id="bands_select" name="bands" required>
+                <option value="">Select a Band</option>
+                <option value="IN865" <%= (config.SX130x_conf && config.SX130x_conf.radio_0 && config.SX130x_conf.radio_0.freq >= 865000000 && config.SX130x_conf.radio_0.freq <= 867000000) ? 'selected' : '' %>>IN865</option>
+                <option value="EU868" <%= (config.SX130x_conf && config.SX130x_conf.radio_0 && ((config.SX130x_conf.radio_0.freq >= 863000000 && config.SX130x_conf.radio_0.freq < 865000000) || (config.SX130x_conf.radio_0.freq > 867000000 && config.SX130x_conf.radio_0.freq < 870000000))) ? 'selected' : '' %>>EU868</option>
+            </select>
+        </div>
+        
+        <!-- Show button to proceed -->
+        <div class="d-flex justify-content-center gap-3">
+            <button type="button" id="show-form-btn" class="btn btn-primary" disabled>Select Band to Continue</button>
+        </div>
+
+        <!-- Advanced options (Initially hidden) -->
+        <div id="advanced-options" class="mt-3" style="display: none;">
             <div class="mb-3">
                 <label for="gatewayEUI" class="form-label">Gateway EUI</label>
-                <input type="text" class="form-control" name="gatewayEUI" id="gatewayEUI" value="<%= config.gateway_conf.gateway_ID %>" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="bands_select" class="form-label">Bands</label>
-                <select class="form-select" id="bands_select" name="bands" required>
-                    <option value="" disabled>Select a Band</option>
-                    <option value="IN865" <%= (config.SX130x_conf.radio_0.freq >= 865000000 && config.SX130x_conf.radio_0.freq <= 8670000000) ? 'selected' : '' %>>IN865</option>
-                    <option value="EU868" <%= ((config.SX130x_conf.radio_0.freq >= 863000000 && config.SX130x_conf.radio_0.freq < 8650000000)||(config.SX130x_conf.radio_0.freq > 867000000 && config.SX130x_conf.radio_0.freq < 8700000000)) ? 'selected' : '' %>>EU868</option>                    
-                </select>
+                <input type="text" class="form-control" name="gatewayEUI" id="gatewayEUI" value="<%= (config.gateway_conf && config.gateway_conf.gateway_ID) ? config.gateway_conf.gateway_ID : '' %>" required />
             </div>
 
             <div class="mb-3">
                 <label for="forwardingPort" class="form-label">Forwarding Port</label>
-                <input type="number" class="form-control" name="forwardingPort" id="forwardingPort" value="<%= config.gateway_conf.serv_port_up %>" required />
+                <input type="number" class="form-control" name="forwardingPort" id="forwardingPort" value="<%= (config.gateway_conf && config.gateway_conf.serv_port_up) ? config.gateway_conf.serv_port_up : '' %>" required />
             </div>
 
             <div class="mb-3">
                 <label for="serverPort" class="form-label">Server Port</label>
-                <input type="number" class="form-control" name="serverPort" id="serverPort" value="<%= config.gateway_conf.serv_port_down %>" required />
+                <input type="number" class="form-control" name="serverPort" id="serverPort" value="<%= (config.gateway_conf && config.gateway_conf.serv_port_down) ? config.gateway_conf.serv_port_down : '' %>" required />
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label for="antennagain" class="form-label">Antenna Gain</label>
-            <div class="input-container position-relative">
-                <input type="number" class="form-control" name="antennagain" id="antennagain" value="<%= config.SX130x_conf.antenna_gain %>" required />
-                <span class="unit-label">dBi</span>
+            <div class="mb-3">
+                <label for="antennagain" class="form-label">Antenna Gain</label>
+                <div class="input-container position-relative">
+                    <input type="number" class="form-control" name="antennagain" id="antennagain" value="<%= (config.SX130x_conf && config.SX130x_conf.antenna_gain) ? config.SX130x_conf.antenna_gain : '' %>" required />
+                    <span class="unit-label">dBi</span>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label for="cableloss" class="form-label">Cable Loss</label>
-            <div class="input-container position-relative">
-                <input type="number" class="form-control" name="cableloss" id="cableloss" value="<%= config.SX130x_conf.cable_loss %>"required />
-                <span class="unit-label">dBi</span>
+            <div class="mb-3">
+                <label for="cableloss" class="form-label">Cable Loss</label>
+                <div class="input-container position-relative">
+                    <input type="number" class="form-control" name="cableloss" id="cableloss" value="<%= (config.SX130x_conf && config.SX130x_conf.cable_loss) ? config.SX130x_conf.cable_loss : '' %>" required />
+                    <span class="unit-label">dBi</span>
+                </div>
             </div>
-        </div>
 
-        <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="d-flex justify-content-center gap-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
         </div>
     </form>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bandsSelect = document.getElementById('bands_select');
+        const showFormBtn = document.getElementById('show-form-btn');
+        const advancedOptions = document.getElementById('advanced-options');
+
+        // Enable the button once a band is selected
+        bandsSelect.addEventListener('change', function() {
+            showFormBtn.disabled = !bandsSelect.value;
+        });
+
+        // Show the rest of the form when the button is clicked
+        showFormBtn.addEventListener('click', async function() {
+            const selectedBand = bandsSelect.value;
+
+            if (selectedBand) {
+                // Send the selected band to the server for file copying
+                try {
+                    const response = await fetch('/band-sel', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({ bands: selectedBand })
+                    });
+
+                    if (response.ok) {
+                        // Show the advanced options if the file copy was successful
+                        advancedOptions.style.display = 'block';
+                        showFormBtn.disabled = true; // Disable the button after clicking
+                    } else {
+                        // Handle error response
+                        const errorText = await response.text();
+                        alert('Error: ' + errorText);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error occurred while copying file.');
+                }
+            }
+        });
+    });
+</script>
 
 <style>
     .input-container {
         position: relative;
     }
+
     .form-control {
         padding-right: 50px; /* Space for the unit label */
     }
+
     .unit-label {
         position: absolute;
         right: 10px;
@@ -65,4 +118,3 @@
         color: #6c757d; /* Optional: adjust the color as needed */
     }
 </style>
-    
