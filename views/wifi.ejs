@@ -1,0 +1,90 @@
+<section class="form-container container position-relative">
+  <a
+    href="https://vandyam.com/" 
+    class="d-flex align-items-center w-100 justify-content-center mb-3 mb-md-0 me-md-auto text-black text-decoration-none py-3"
+  >
+    <span class="fs-1 fw-bold">Vandyam Solutions</span>
+  </a>
+
+  <h2 class="text-center">Wifi Configuration</h2>
+
+  <% if(success){ %>
+    <!-- Display success message and hide the form -->
+    <div class="alert alert-success" role="alert">
+      Successfully configured Wi-Fi!
+<!-- 
+      <div class="ser-add">
+        Server address:
+      </div> -->
+    </div>
+    <div class="buttons d-flex justify-content-center gap-2 mx-auto">
+      <button class="btn btn-secondary" onclick="resetPage()">Back</button>
+      <button class="btn btn-secondary" onclick="tcpage()">Go-To Test Configuration</button>
+    </div>
+  <% } else { %>
+    <!-- Display the form if the Wi-Fi is not successfully configured -->
+    <form class="container m-1 d-fixed" method="POST" action="/wifi-connect">
+      <div class="mb-1">
+        <label for="wifi_ssid_select" class="form-label">Wifi SSID</label>
+        <select
+          class="form-select"
+          aria-label="Default select example"
+          id="wifi_ssid_select"
+          name="ssid"
+        >
+          <% networks.forEach(function(wifiNetwork){ %>
+            <option id="options"><%= wifiNetwork.ssid %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="mb-3 position-relative">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input 
+          type="password"
+          class="form-control"
+          name="password"
+          id="exampleInputPassword1"
+        />
+        <!-- Toggle icon for password visibility -->
+        <span class="toggle-password position-absolute" style="top: 75%; right: 10px; transform: translateY(-50%); cursor: pointer;">
+          <i class="fas fa-eye" id="toggleIcon"></i>
+        </span>
+      </div>
+
+      <div class="d-flex justify-content-center gap-3">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+      
+  
+    </form>
+  <% } %>
+
+  <script>
+    // Toggle password visibility
+    const passwordInput = document.getElementById("exampleInputPassword1");
+    const toggleIcon = document.getElementById("toggleIcon");
+
+    document.querySelector(".toggle-password").addEventListener("click", function() {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleIcon.classList.remove("fa-eye");
+        toggleIcon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        toggleIcon.classList.remove("fa-eye-slash");
+        toggleIcon.classList.add("fa-eye");
+      }
+    });
+    function resetPage() {
+    // Redirect to the main page (home page)
+    window.location.href = '/';
+}
+
+function tcpage() {
+  // Redirect to the main page (home page)
+  window.location.href = '/test-config';
+}
+
+  </script>
+</section>

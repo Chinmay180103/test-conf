@@ -1,0 +1,68 @@
+<section class="form-container container position-relative mt-3">
+    <h2 class="text-center">Test Configuration</h2>
+    <form class="container m-1 d-fixed" method="POST" action="/test-config-submit">
+        <div id="advanced-options" class="mt-3">
+            <!-- Advanced options -->
+            <div class="mb-3">
+                <label for="gatewayEUI" class="form-label">Gateway EUI</label>
+                <input type="text" class="form-control" name="gatewayEUI" id="gatewayEUI" value="<%= config.gateway_conf.gateway_ID %>" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="bands_select" class="form-label">Bands</label>
+                <select class="form-select" id="bands_select" name="bands" required>
+                    <option value="" disabled>Select a Band</option>
+                    <option value="IN865" <%= (config.SX130x_conf.radio_0.freq >= 865000000 && config.SX130x_conf.radio_0.freq <= 8670000000) ? 'selected' : '' %>>IN865</option>
+                    <option value="EU868" <%= ((config.SX130x_conf.radio_0.freq >= 863000000 && config.SX130x_conf.radio_0.freq < 8650000000)||(config.SX130x_conf.radio_0.freq > 867000000 && config.SX130x_conf.radio_0.freq < 8700000000)) ? 'selected' : '' %>>EU868</option>                    
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="forwardingPort" class="form-label">Forwarding Port</label>
+                <input type="number" class="form-control" name="forwardingPort" id="forwardingPort" value="<%= config.gateway_conf.serv_port_up %>" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="serverPort" class="form-label">Server Port</label>
+                <input type="number" class="form-control" name="serverPort" id="serverPort" value="<%= config.gateway_conf.serv_port_down %>" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="antennagain" class="form-label">Antenna Gain</label>
+            <div class="input-container position-relative">
+                <input type="number" class="form-control" name="antennagain" id="antennagain" value="<%= config.SX130x_conf.antenna_gain %>" required />
+                <span class="unit-label">dBi</span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="cableloss" class="form-label">Cable Loss</label>
+            <div class="input-container position-relative">
+                <input type="number" class="form-control" name="cableloss" id="cableloss" value="<%= config.SX130x_conf.cable_loss %>"required />
+                <span class="unit-label">dBi</span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</section>
+
+<style>
+    .input-container {
+        position: relative;
+    }
+    .form-control {
+        padding-right: 50px; /* Space for the unit label */
+    }
+    .unit-label {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d; /* Optional: adjust the color as needed */
+    }
+</style>
+    
